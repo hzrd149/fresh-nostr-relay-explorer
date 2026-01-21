@@ -3,15 +3,13 @@ import { useSyncExternalStore } from "preact/compat";
 import { useCallback, useMemo, useRef } from "preact/hooks";
 import { BehaviorSubject, type Observable, of, Subscription, take } from "rxjs";
 
-export default function use$<T>(input?: BehaviorSubject<T>): T;
-export default function use$<T>(
-  input?: Observable<T> | undefined,
-): T | undefined;
-export default function use$<T>(
+export function use$<T>(input?: BehaviorSubject<T>): T;
+export function use$<T>(input?: Observable<T> | undefined): T | undefined;
+export function use$<T>(
   input: () => Observable<T> | undefined,
   deps: unknown[],
 ): T | undefined;
-export default function use$<T>(
+export function use$<T>(
   input?:
     | Observable<T>
     | BehaviorSubject<T>
@@ -19,9 +17,7 @@ export default function use$<T>(
   deps?: unknown[],
 ): T | undefined {
   const state$: Observable<T | undefined> = useMemo(
-    () =>
-      (typeof input === "function" ? input() : input) ??
-        of(undefined),
+    () => (typeof input === "function" ? input() : input) ?? of(undefined),
     deps ?? [input],
   );
 
@@ -29,21 +25,37 @@ export default function use$<T>(
     state$ instanceof BehaviorSubject ? state$.getValue() : undefined,
   );
   const subRef = useRef<Subscription | null>(null);
+  const callbackRef = useRef<(() => void) | null>(null);
 
-  const subscribe = useCallback((callback: () => void) => {
-    // Subscribe if not already subscribed
-    if (!subRef.current) {
-      subRef.current = state$.subscribe((v) => {
-        valueRef.current = v;
-        callback();
-      });
-    }
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      // Store the callback
+      callbackRef.current = callback;
 
-    return () => {
-      subRef.current?.unsubscribe();
-      subRef.current = null;
-    };
-  }, [state$]);
+      // Subscribe if not already subscribed
+      if (!subRef.current) {
+        subRef.current = state$.subscribe((v) => {
+          valueRef.current = v;
+          callbackRef.current?.();
+        });
+      } else {
+        // If subscription already exists (created in getSnapshot), update it
+        // by creating a new subscription with the callback
+        subRef.current.unsubscribe();
+        subRef.current = state$.subscribe((v) => {
+          valueRef.current = v;
+          callbackRef.current?.();
+        });
+      }
+
+      return () => {
+        subRef.current?.unsubscribe();
+        subRef.current = null;
+        callbackRef.current = null;
+      };
+    },
+    [state$],
+  );
 
   const getSnapshot = useCallback(() => {
     // Server snapshot
@@ -52,20 +64,17 @@ export default function use$<T>(
       state$.pipe(take(1)).subscribe((v) => {
         valueRef.current = v;
       });
-    } else {
-      // During client hydration: create subscription if needed
-      if (!subRef.current) {
-        subRef.current = state$.subscribe((v) => {
-          valueRef.current = v;
-        });
-      }
+    } else if (!subRef.current) {
+      // Create subscription if needed to get the initial value
+      subRef.current = state$.subscribe((v) => {
+        valueRef.current = v;
+        // Call the callback if it exists (set by subscribe)
+        callbackRef.current?.();
+      });
     }
 
     return valueRef.current;
   }, [state$]);
 
-  return useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-  );
+  return useSyncExternalStore(subscribe, getSnapshot);
 }
