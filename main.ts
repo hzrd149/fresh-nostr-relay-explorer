@@ -1,13 +1,18 @@
 import { App, staticFiles } from "fresh";
 import { define, type State } from "./utils.ts";
+import { ensureWebSocketURL } from "applesauce-core/helpers";
 
 export const app = new App<State>();
 
 app.use(staticFiles());
 
+const relay = ensureWebSocketURL(
+  Deno.env.get("RELAY") ?? "wss://relay.damus.io",
+);
+
 // Pass a shared value from a middleware
 app.use(async (ctx) => {
-  ctx.state.relay = Deno.env.get("RELAY") ?? "wss://relay.damus.io";
+  ctx.state.relay = relay;
   return await ctx.next();
 });
 
