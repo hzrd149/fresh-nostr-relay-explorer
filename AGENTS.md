@@ -215,6 +215,9 @@ app.use(async (ctx) => {
 - **Approach**: Utility-first with className prop
 - **Dark mode**: Support via `dark:` prefix classes
 - Use semantic class names: `className="flex flex-col gap-4"`
+- **Component Library**: DaisyUI - Use DaisyUI components whenever possible for UI elements. DaisyUI components are class-based (not imported). See https://daisyui.com/components/ for available components.
+- **Design preference**: Avoid drop shadows (no `shadow`, `shadow-*` classes)
+- **Important**: The `form-control` class does NOT exist in DaisyUI. Use `label` and `fieldset` components for form layouts instead.
 
 ## Error Handling
 
