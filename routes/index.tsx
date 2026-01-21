@@ -1,15 +1,14 @@
 import { useSignal } from "@preact/signals";
+import { lastValueFrom, mapEventsToStore } from "applesauce-core";
+import { page } from "fresh";
 import { Head } from "fresh/runtime";
-import { define } from "../utils.ts";
 import Counter from "../islands/Counter.tsx";
 import NoteFeed from "../islands/NoteFeed.tsx";
-import { page } from "fresh";
-import { pool } from "../lib/relay-pool.ts";
-import { lastValueFrom, mapEventsToStore } from "applesauce-core";
 import { eventStore } from "../lib/event-store.ts";
+import { pool } from "../lib/relay-pool.ts";
+import { define } from "../utils.ts";
 
 export const handler = define.handlers(async (ctx) => {
-  console.log("Relay " + ctx.state.relay);
   await lastValueFrom(
     pool.relay(ctx.state.relay).request({ kinds: [1], limit: 20 }).pipe(
       mapEventsToStore(eventStore),
@@ -21,8 +20,6 @@ export const handler = define.handlers(async (ctx) => {
 
 export default define.page(function Home(ctx) {
   const count = useSignal(3);
-
-  console.log("Relay " + ctx.state.relay);
 
   return (
     <div class="px-4 py-8 mx-auto fresh-gradient min-h-screen">

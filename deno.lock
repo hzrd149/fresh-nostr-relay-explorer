@@ -31,26 +31,26 @@
     "npm:@babel/preset-react@^7.27.1": "7.28.5_@babel+core@7.28.6",
     "npm:@mjackson/node-fetch-server@0.7": "0.7.0",
     "npm:@opentelemetry/api@^1.9.0": "1.9.0",
-    "npm:@preact/signals@^2.2.1": "2.5.1_preact@10.28.2",
-    "npm:@preact/signals@^2.5.0": "2.5.1_preact@10.28.2",
+    "npm:@preact/signals@^2.2.1": "2.6.0_preact@10.28.2",
+    "npm:@preact/signals@^2.6.0": "2.6.0_preact@10.28.2",
     "npm:@prefresh/vite@^2.4.8": "2.4.11_preact@10.28.2_vite@7.3.1__@types+node@24.2.0__picomatch@4.0.3_@types+node@24.2.0",
-    "npm:@tailwindcss/vite@^4.1.12": "4.1.18_vite@7.3.1__@types+node@24.2.0__picomatch@4.0.3_@types+node@24.2.0",
+    "npm:@tailwindcss/vite@^4.1.18": "4.1.18_vite@7.3.1__@types+node@24.2.0__picomatch@4.0.3_@types+node@24.2.0",
     "npm:@types/node@*": "24.2.0",
-    "npm:applesauce-common@next": "0.0.0-next-20251231152045",
-    "npm:applesauce-core@next": "0.0.0-next-20260120162357",
-    "npm:applesauce-loaders@next": "0.0.0-next-20260120162357",
-    "npm:applesauce-relay@next": "0.0.0-next-20260120162357",
+    "npm:applesauce-common@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
+    "npm:applesauce-core@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
+    "npm:applesauce-loaders@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
+    "npm:applesauce-relay@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
     "npm:esbuild-wasm@~0.25.11": "0.25.12",
     "npm:esbuild@0.25.7": "0.25.7",
     "npm:esbuild@~0.25.5": "0.25.12",
     "npm:preact-render-to-string@^6.6.3": "6.6.5_preact@10.28.2",
     "npm:preact@^10.27.0": "10.28.2",
     "npm:preact@^10.27.2": "10.28.2",
+    "npm:preact@^10.28.2": "10.28.2",
     "npm:rollup@^4.50.0": "4.55.2",
     "npm:rxjs@^7.8.2": "7.8.2",
-    "npm:tailwindcss@^4.1.10": "4.1.18",
-    "npm:vite@^7.1.3": "7.3.1_@types+node@24.2.0_picomatch@4.0.3",
-    "npm:vite@^7.1.4": "7.3.1_@types+node@24.2.0_picomatch@4.0.3"
+    "npm:tailwindcss@^4.1.18": "4.1.18",
+    "npm:vite@^7.3.1": "7.3.1_@types+node@24.2.0_picomatch@4.0.3"
   },
   "jsr": {
     "@deno/esbuild-plugin@1.2.1": {
@@ -107,8 +107,7 @@
         "npm:@babel/preset-react",
         "npm:@mjackson/node-fetch-server",
         "npm:@prefresh/vite",
-        "npm:rollup",
-        "npm:vite@^7.1.4"
+        "npm:rollup"
       ]
     },
     "@std/bytes@1.0.6": {
@@ -801,11 +800,11 @@
     "@opentelemetry/api@1.9.0": {
       "integrity": "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="
     },
-    "@preact/signals-core@1.12.1": {
-      "integrity": "sha512-BwbTXpj+9QutoZLQvbttRg5x3l5468qaV2kufh+51yha1c53ep5dY4kTuZR35+3pAZxpfQerGJiQqg34ZNZ6uA=="
+    "@preact/signals-core@1.12.2": {
+      "integrity": "sha512-5Yf8h1Ke3SMHr15xl630KtwPTW4sYDFkkxS0vQ8UiQLWwZQnrF9IKaVG1mN5VcJz52EcWs2acsc/Npjha/7ysA=="
     },
-    "@preact/signals@2.5.1_preact@10.28.2": {
-      "integrity": "sha512-VPjk5YFt7i11Fi4UK0tzaEe5xLwfhUxXL3l89ocxQ5aPz7bRo8M5+N73LjBMPklyXKYKz6YsNo4Smp8n6nplng==",
+    "@preact/signals@2.6.0_preact@10.28.2": {
+      "integrity": "sha512-a22Mh1CCA+PaqobdV2YfeZ30PGywp/QnhCBNVDIsHUdkuqpYcbxt0vgC78JYaicBqWxAOGXLoExj5WHaZ/VKvg==",
       "dependencies": [
         "@preact/signals-core",
         "preact"
@@ -1094,18 +1093,18 @@
         "undici-types"
       ]
     },
-    "applesauce-common@0.0.0-next-20251231152045": {
-      "integrity": "sha512-MUdMYuoMgRVq472AbKgpQ30mjiP72de/RiCpJ17PzRuKHVZfv0qXDbe14AchPtIBHwokFndv/zCJ1OosxOlQ9A==",
+    "applesauce-common@0.0.0-next-20260121015157": {
+      "integrity": "sha512-YeHzPm/PmBs27Us5ItB2o6m/gd4voOXx7Zz25iCWVUxNkE/I7u04b2BofxMfZ/p4GEUE4LL2VnAyjIy0uVb5gw==",
       "dependencies": [
         "@scure/base@1.2.6",
-        "applesauce-core@0.0.0-next-20251231152045",
+        "applesauce-core",
         "hash-sum",
         "light-bolt11-decoder",
         "rxjs"
       ]
     },
-    "applesauce-core@0.0.0-next-20251231152045": {
-      "integrity": "sha512-NFnVCwBbwp1f9yNjoeSXmXxjHplHJW9lI5ayNwEACFyai+0aWDXxdkH02uwD24VZRhcZ+2rz0N8rIol5PvWhjQ==",
+    "applesauce-core@0.0.0-next-20260121015157": {
+      "integrity": "sha512-dnS0drlNfkChic1Q7ZSQGMJouGQu6lvlfoStrke/aOHjYznp4QuRcPL3oxaei7ahUcSu9Q99MXWDd/F2Mfh52Q==",
       "dependencies": [
         "debug",
         "fast-deep-equal",
@@ -1115,30 +1114,19 @@
         "rxjs"
       ]
     },
-    "applesauce-core@0.0.0-next-20260120162357": {
-      "integrity": "sha512-tb3GCBQCg7FgBx+CpmjC3Dn5dQB+lJUY7U6nXDahPdHGFuxi+dTF28BCze1O3kmVok+diIGB+nfOjsyfZoOCpQ==",
+    "applesauce-loaders@0.0.0-next-20260121015157": {
+      "integrity": "sha512-q9kKPoiaJuYjQGI1XEAAgvZmk6Qkb5YNMpcYSMP245LpikNT/gm+L80ieIBfjXJyezg7QJUYMeaoPmVGk1aMtw==",
       "dependencies": [
-        "debug",
-        "fast-deep-equal",
-        "hash-sum",
-        "nanoid@5.1.6",
-        "nostr-tools",
-        "rxjs"
-      ]
-    },
-    "applesauce-loaders@0.0.0-next-20260120162357": {
-      "integrity": "sha512-HTtOeQu3wfV2tl+8HHyvwrnGkcJPLVqwVMJ4f9DB7m8HgpfHmDtUVAei2VIXZtChdc5nJc2rzrzEFCNevW9sjQ==",
-      "dependencies": [
-        "applesauce-core@0.0.0-next-20260120162357",
+        "applesauce-core",
         "nanoid@5.1.6",
         "rxjs"
       ]
     },
-    "applesauce-relay@0.0.0-next-20260120162357": {
-      "integrity": "sha512-gLnA7+4tVQoU8hjL9axLU+T4b+3MURuIXx0yI16OJb2esexI5w3HQAPqfv76O0WsovyoTzuvHyggys6idFCB8Q==",
+    "applesauce-relay@0.0.0-next-20260121015157": {
+      "integrity": "sha512-3OpvJL72YxFzy9+7xFMZkwyBerSevIo7Y58QfIPYI1dK3+tcjN4srrYv4MIxYHpJ+WQ5duFzn8XUQloX0anOGg==",
       "dependencies": [
         "@noble/hashes@1.8.0",
-        "applesauce-core@0.0.0-next-20260120162357",
+        "applesauce-core",
         "nanoid@5.1.6",
         "nostr-tools",
         "rxjs"
@@ -1585,16 +1573,16 @@
       "jsr:@fresh/core@^2.2.0",
       "jsr:@fresh/plugin-vite@^1.0.8",
       "jsr:@std/cache@~0.2.2",
-      "npm:@preact/signals@^2.5.0",
-      "npm:@tailwindcss/vite@^4.1.12",
-      "npm:applesauce-common@next",
-      "npm:applesauce-core@next",
-      "npm:applesauce-loaders@next",
-      "npm:applesauce-relay@next",
-      "npm:preact@^10.27.2",
+      "npm:@preact/signals@^2.6.0",
+      "npm:@tailwindcss/vite@^4.1.18",
+      "npm:applesauce-common@^0.0.0-next-20260121015157",
+      "npm:applesauce-core@^0.0.0-next-20260121015157",
+      "npm:applesauce-loaders@^0.0.0-next-20260121015157",
+      "npm:applesauce-relay@^0.0.0-next-20260121015157",
+      "npm:preact@^10.28.2",
       "npm:rxjs@^7.8.2",
-      "npm:tailwindcss@^4.1.10",
-      "npm:vite@^7.1.3"
+      "npm:tailwindcss@^4.1.18",
+      "npm:vite@^7.3.1"
     ]
   }
 }
