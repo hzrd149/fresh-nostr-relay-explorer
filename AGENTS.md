@@ -129,6 +129,7 @@ export default define.page(function PageName(ctx) {
 ### State Management
 
 **Preact Signals**: For local UI state
+
 ```typescript
 const count = useSignal(0);
 ```
@@ -138,6 +139,7 @@ const count = useSignal(0);
 **IMPORTANT**: Choose the right hook for RxJS observables:
 
 **`use$` hook** - For getting values from observables (server + client safe):
+
 - Works on both server and client
 - Returns the current value from the observable
 - Use for event store queries and cast class properties
@@ -153,6 +155,7 @@ const picture = use$(note.author.profile$.picture);
 ```
 
 **`useSubscription` hook** - For live subscriptions (client-only):
+
 - Does NOT return a value (only subscribes)
 - Use for relay subscriptions and live data streams
 - Should only trigger on the client (not during SSR)
@@ -161,28 +164,29 @@ const picture = use$(note.author.profile$.picture);
 ```typescript
 // Subscribe to live relay data (no return value)
 useSubscription(
-  () => pool.relay(relay).subscription({ kinds: [1], limit: 10 }).pipe(
-    mapEventsToStore(eventStore)
-  ),
-  [relay]
+  () =>
+    pool.relay(relay).subscription({ kinds: [1], limit: 10 }).pipe(
+      mapEventsToStore(eventStore),
+    ),
+  [relay],
 );
 ```
 
 **Typical pattern** - Combine both hooks:
+
 ```typescript
 // 1. Subscribe to live updates (client-only, no SSR)
-useSubscription(() => 
+useSubscription(() =>
   pool.relay(relay).subscription({ kinds: [1] }).pipe(
-    mapEventsToStore(eventStore)
-  ), 
-  [relay]
-);
+    mapEventsToStore(eventStore),
+  ), [relay]);
 
 // 2. Get reactive values from store (server + client)
 const notes = use$(() => eventStore.timeline({ kinds: [1] }), []);
 ```
 
 **Context via middleware**: For shared app state (see main.ts)
+
 ```typescript
 app.use(async (ctx) => {
   ctx.state.relay = Deno.env.get("RELAY") ?? "wss://relay.damus.io";
@@ -215,9 +219,12 @@ app.use(async (ctx) => {
 - **Approach**: Utility-first with className prop
 - **Dark mode**: Support via `dark:` prefix classes
 - Use semantic class names: `className="flex flex-col gap-4"`
-- **Component Library**: DaisyUI - Use DaisyUI components whenever possible for UI elements. DaisyUI components are class-based (not imported). See https://daisyui.com/components/ for available components.
+- **Component Library**: DaisyUI - Use DaisyUI components whenever possible for
+  UI elements. DaisyUI components are class-based (not imported). See
+  https://daisyui.com/components/ for available components.
 - **Design preference**: Avoid drop shadows (no `shadow`, `shadow-*` classes)
-- **Important**: The `form-control` class does NOT exist in DaisyUI. Use `label` and `fieldset` components for form layouts instead.
+- **Important**: The `form-control` class does NOT exist in DaisyUI. Use `label`
+  and `fieldset` components for form layouts instead.
 
 ## Error Handling
 
@@ -334,6 +341,102 @@ export function MyIsland() {
 2. Store in `eventStore` via `mapEventsToStore()`
 3. Query from store via `eventStore.timeline()`
 4. Use `use$()` hook to reactively render
+
+### Loading single events from EventPointer/AddressPointer
+
+**IMPORTANT**: When fetching single events by pointer, use `eventStore.event()`
+with proper filtering and timeout:
+
+```typescript
+import { lastValueFrom, simpleTimeout } from "applesauce-core";
+import { normalizeToEventPointer } from "applesauce-core/helpers";
+import { filter, take } from "rxjs";
+
+// Decode nevent to EventPointer
+const eventPointer = normalizeToEventPointer(nevent);
+
+// Get event from store (triggers eventLoader automatically)
+const note = await lastValueFrom(
+  eventStore.event(eventPointer).pipe(
+    castEventStream(Note, eventStore),
+    filter((e) => e !== undefined), // Wait for event to load
+    take(1), // Take first value
+    simpleTimeout(5000, "Timeout loading event"), // Don't hang forever
+  ),
+  { defaultValue: undefined }, // Fallback if timeout occurs
+);
+```
+
+**Why this pattern?**
+
+- `eventStore.event(pointer)` returns an observable that emits `undefined`
+  initially, then the event once loaded
+- The configured `eventLoader` automatically fetches from relays using relay
+  hints from the pointer
+- `filter(e => e !== undefined)` waits for the actual event (skips initial
+  undefined)
+- `take(1)` completes after receiving the first defined value
+- `simpleTimeout(5000)` prevents hanging if the event isn't found
+- `{ defaultValue: undefined }` handles timeout gracefully
+
+**Don't do this** (manual fetching):
+
+```typescript
+// ❌ BAD - manually fetching before querying store
+await lastValueFrom(
+  pool.request(relays, { ids: [pointer.id] }).pipe(
+    mapEventsToStore(eventStore),
+  ),
+);
+const event = await lastValueFrom(eventStore.event(pointer).pipe(take(1)));
+```
+
+### Avoiding "no elements in sequence" errors
+
+**CRITICAL**: Always provide `defaultValue` to `lastValueFrom` when the
+observable might complete without emitting:
+
+```typescript
+// ❌ BAD - will throw if no events found
+await lastValueFrom(
+  pool.request(relays, { kinds: [0], authors: [pubkey] }).pipe(
+    mapEventsToStore(eventStore),
+  ),
+);
+
+// ✅ GOOD - provides default value
+await lastValueFrom(
+  pool.request(relays, { kinds: [0], authors: [pubkey] }).pipe(
+    mapEventsToStore(eventStore),
+  ),
+  { defaultValue: null },
+);
+```
+
+**When to use default values:**
+
+- Fetching events that might not exist (profiles, replies, zaps)
+- Querying with filters that might match zero events
+- Any `pool.request()` or `pool.subscription()` that could return empty results
+- BehaviorSubject/Observable that might not emit before completion
+
+**Pattern for fetching multiple related events:**
+
+```typescript
+// Fetch profiles (might be empty)
+await lastValueFrom(
+  pool.request(relays, { kinds: [0], authors: pubkeys }).pipe(
+    mapEventsToStore(eventStore),
+  ),
+  { defaultValue: null },
+);
+
+// Get from store with default
+const profiles = await lastValueFrom(
+  someObservable$.pipe(take(1)),
+  { defaultValue: [] }, // Empty array if nothing emitted
+);
+```
 
 ### Custom hooks
 

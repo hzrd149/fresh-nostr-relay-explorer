@@ -35,7 +35,8 @@ export default define.page(function Home(ctx) {
             Dashboard
           </h1>
           <p className="text-neutral-600 dark:text-neutral-400 mb-8">
-            Explore and analyze Nostr relay: <span className="font-mono text-sm">{ctx.state.relay}</span>
+            Explore and analyze Nostr relay:{" "}
+            <span className="font-mono text-sm">{ctx.state.relay}</span>
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -67,7 +68,9 @@ export default define.page(function Home(ctx) {
                 Welcome
               </h2>
               <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                This is a Nostr relay explorer built with Fresh and Deno. Use the navigation on the left to explore different aspects of the relay.
+                This is a Nostr relay explorer built with Fresh and Deno. Use
+                the navigation on the left to explore different aspects of the
+                relay.
               </p>
               <div className="space-y-2">
                 <a
@@ -102,10 +105,13 @@ export default define.page(function Home(ctx) {
                 About Nostr
               </h2>
               <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                Nostr is a simple, open protocol that enables global, decentralized, and censorship-resistant social media.
+                Nostr is a simple, open protocol that enables global,
+                decentralized, and censorship-resistant social media.
               </p>
               <p className="text-neutral-600 dark:text-neutral-400">
-                This explorer connects to relays to fetch and display events in real-time, allowing you to see the activity happening on the network.
+                This explorer connects to relays to fetch and display events in
+                real-time, allowing you to see the activity happening on the
+                network.
               </p>
             </div>
           </div>

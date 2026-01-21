@@ -18,7 +18,7 @@ const relay = new Relay("wss://relay.example.com");
 
 // Query events
 relay.request({ kinds: [1], limit: 10 })
-  .subscribe(event => console.log(event));
+  .subscribe((event) => console.log(event));
 
 // Publish event
 const response = await relay.publish(event);
@@ -34,7 +34,7 @@ const relays = ["wss://relay1.com", "wss://relay2.com"];
 
 // Query multiple relays (auto-deduplicates)
 pool.request(relays, { kinds: [1], limit: 10 })
-  .subscribe(event => console.log(event));
+  .subscribe((event) => console.log(event));
 
 // Publish to multiple relays
 const responses = await pool.publish(relays, event);
@@ -45,10 +45,12 @@ const responses = await pool.publish(relays, event);
 ### Relay vs RelayPool
 
 **Relay**: Single relay connection
+
 - Use for: Direct operations, testing, fine-grained control
 - Import: `import { Relay } from "applesauce-relay"`
 
 **RelayPool**: Multiple relay manager
+
 - Use for: Most applications (recommended)
 - Automatic deduplication and connection management
 - Import: `import { RelayPool } from "applesauce-relay/pool"`
@@ -56,22 +58,25 @@ const responses = await pool.publish(relays, event);
 ### Observable Patterns
 
 **Server-side (Fresh handlers)**:
+
 ```typescript
 import { lastValueFrom } from "rxjs";
 
 await lastValueFrom(
-  relay.request({ kinds: [1] }).pipe(mapEventsToStore(eventStore))
+  relay.request({ kinds: [1] }).pipe(mapEventsToStore(eventStore)),
 );
 ```
 
 **Client-side (Islands)**:
+
 ```typescript
 // Subscribe to live updates
 useSubscription(
-  () => relay.subscription({ kinds: [1] }).pipe(
-    mapEventsToStore(eventStore)
-  ),
-  [relay]
+  () =>
+    relay.subscription({ kinds: [1] }).pipe(
+      mapEventsToStore(eventStore),
+    ),
+  [relay],
 );
 
 // Get reactive values
@@ -83,22 +88,60 @@ const notes = use$(() => eventStore.timeline({ kinds: [1] }), []);
 ### Fetching Events
 
 **One-time request**:
+
 ```typescript
-// Server-side
+// Server-side (IMPORTANT: Use defaultValue to prevent "no elements in sequence" error)
 const events = await lastValueFrom(
-  relay.request({ kinds: [1], limit: 50 }).pipe(toArray())
+  relay.request({ kinds: [1], limit: 50 }).pipe(
+    mapEventsToStore(eventStore),
+  ),
+  { defaultValue: null }, // Always provide default for empty results
 );
 
 // Client-side
-relay.request({ kinds: [1] }).subscribe(event => console.log(event));
+relay.request({ kinds: [1] }).subscribe((event) => console.log(event));
 ```
 
+**Loading single events by pointer** (EventPointer/AddressPointer):
+
+```typescript
+import { simpleTimeout } from "applesauce-core";
+import { normalizeToEventPointer } from "applesauce-core/helpers";
+import { filter, take } from "rxjs";
+
+// Decode nip-19 identifier
+const eventPointer = normalizeToEventPointer(nevent);
+
+// Use eventStore.event() - triggers eventLoader automatically
+const note = await lastValueFrom(
+  eventStore.event(eventPointer).pipe(
+    castEventStream(Note, eventStore),
+    filter((e) => e !== undefined), // Wait for event to load
+    take(1), // Take first value
+    simpleTimeout(5000, "Timeout loading event"), // Prevent hanging
+  ),
+  { defaultValue: undefined }, // Fallback if timeout
+);
+```
+
+**Why this pattern?**
+
+- `eventStore.event(pointer)` emits `undefined` initially, then the event when
+  loaded
+- The configured `eventLoader` automatically fetches from relays using pointer
+  hints
+- `filter(e => e !== undefined)` waits for actual event (skips initial
+  undefined)
+- `simpleTimeout()` prevents hanging if event isn't found
+- Always use `defaultValue` to handle empty/timeout cases
+
 **Persistent subscription**:
+
 ```typescript
 relay.subscription({ kinds: [1] }, {
-  reconnect: Infinity,  // Auto-reconnect forever
-  resubscribe: 5        // Resubscribe 5 times if closed
-}).subscribe(response => {
+  reconnect: Infinity, // Auto-reconnect forever
+  resubscribe: 5, // Resubscribe 5 times if closed
+}).subscribe((response) => {
   if (response === "EOSE") {
     console.log("End of stored events");
   } else {
@@ -116,33 +159,33 @@ console.log(`Published: ${response.ok}`, response.message);
 
 // Publish to multiple relays
 const responses = await pool.publish(relays, event);
-responses.forEach(r => 
-  console.log(`${r.from}: ${r.ok ? "✓" : "✗"}`)
-);
+responses.forEach((r) => console.log(`${r.from}: ${r.ok ? "✓" : "✗"}`));
 ```
 
 ### Fetching Relay Info
 
 **Server-side (recommended)**:
+
 ```typescript
 export const handler = define.handlers(async (ctx) => {
   const relay = pool.relay(ctx.state.relay);
-  
+
   const information = await relay.getInformation();
   const supported = await relay.getSupported();
   const limitations = await relay.getLimitations();
-  
+
   return page({ relayInfo: { ...information, supported, limitations } });
 });
 ```
 
 **Client-side**:
+
 ```typescript
-relay.information$.subscribe(info => {
+relay.information$.subscribe((info) => {
   if (info) console.log("Relay name:", info.name);
 });
 
-relay.supported$.subscribe(nips => {
+relay.supported$.subscribe((nips) => {
   if (nips?.includes(77)) console.log("Supports Negentropy");
 });
 ```
@@ -157,9 +200,9 @@ export const handler = define.handlers(async (ctx) => {
   await lastValueFrom(
     pool.relay(ctx.state.relay)
       .request({ kinds: [1], limit: 50 })
-      .pipe(mapEventsToStore(eventStore))
+      .pipe(mapEventsToStore(eventStore)),
   );
-  
+
   return page({});
 });
 ```
@@ -171,18 +214,19 @@ export const handler = define.handlers(async (ctx) => {
 export default function NoteFeed({ relay }: { relay: string }) {
   // Subscribe to live updates
   useSubscription(
-    () => pool.relay(relay)
-      .subscription({ kinds: [1] })
-      .pipe(mapEventsToStore(eventStore)),
-    [relay]
+    () =>
+      pool.relay(relay)
+        .subscription({ kinds: [1] })
+        .pipe(mapEventsToStore(eventStore)),
+    [relay],
   );
-  
+
   // Get reactive values
   const notes = use$(
     () => eventStore.timeline({ kinds: [1] }),
-    []
+    [],
   );
-  
+
   return <div>{/* Render notes */}</div>;
 }
 ```
@@ -196,13 +240,13 @@ const relays = ["wss://relay1.com", "wss://relay2.com"];
 
 // Auto-deduplicated request
 pool.request(relays, { kinds: [1], limit: 50 })
-  .subscribe(event => console.log(event));
+  .subscribe((event) => console.log(event));
 
 // Persistent subscription
 pool.subscription(relays, { kinds: [1] }, {
   id: "multi-feed",
-  reconnect: Infinity
-}).subscribe(response => console.log(response));
+  reconnect: Infinity,
+}).subscribe((response) => console.log(response));
 ```
 
 ### Publishing to Multiple Relays
@@ -210,7 +254,7 @@ pool.subscription(relays, { kinds: [1] }, {
 ```typescript
 const responses = await pool.publish(relays, event);
 
-responses.forEach(response => {
+responses.forEach((response) => {
   console.log(`${response.from}: ${response.ok ? "✓" : "✗"}`);
   if (!response.ok) {
     console.log(`Error: ${response.message}`);
@@ -223,11 +267,11 @@ responses.forEach(response => {
 ```typescript
 const filterMap = {
   "wss://notes-relay.com": { kinds: [1], limit: 100 },
-  "wss://media-relay.com": { kinds: [1063], limit: 50 }
+  "wss://media-relay.com": { kinds: [1063], limit: 50 },
 };
 
 pool.subscriptionMap(filterMap)
-  .subscribe(response => console.log(response));
+  .subscribe((response) => console.log(response));
 ```
 
 ### Advanced: Outbox Model (NIP-65)
@@ -237,26 +281,26 @@ import { createOutboxMap } from "applesauce-core/helpers/relay-selection";
 
 const outboxMap = createOutboxMap(userProfiles);
 
-pool.outboxSubscription(outboxMap, { 
-  kinds: [1], 
-  since: unixNow() - 86400 
-}).subscribe(response => console.log(response));
+pool.outboxSubscription(outboxMap, {
+  kinds: [1],
+  since: unixNow() - 86400,
+}).subscribe((response) => console.log(response));
 ```
 
 ## Authentication (NIP-42)
 
 ```typescript
 // Listen for auth challenges
-relay.challenge$.subscribe(challenge => {
+relay.challenge$.subscribe((challenge) => {
   if (!challenge) return;
-  
+
   relay.authenticate(window.nostr)
     .then(() => console.log("Authenticated"))
-    .catch(err => console.error("Auth failed:", err));
+    .catch((err) => console.error("Auth failed:", err));
 });
 
 // Check auth state
-relay.authenticated$.subscribe(authenticated => {
+relay.authenticated$.subscribe((authenticated) => {
   console.log("Authenticated:", authenticated);
 });
 ```
@@ -264,19 +308,19 @@ relay.authenticated$.subscribe(authenticated => {
 ## RxJS Operators
 
 ```typescript
-import { onlyEvents, completeOnEose } from "applesauce-relay/operators";
+import { completeOnEose, onlyEvents } from "applesauce-relay/operators";
 
 // Filter out EOSE markers
 relay.subscription({ kinds: [1] })
   .pipe(onlyEvents())
-  .subscribe(event => console.log(event));
+  .subscribe((event) => console.log(event));
 
 // Complete when EOSE received
 relay.req({ kinds: [1] })
   .pipe(completeOnEose())
   .subscribe({
-    next: event => console.log(event),
-    complete: () => console.log("EOSE received")
+    next: (event) => console.log(event),
+    complete: () => console.log("EOSE received"),
   });
 ```
 
@@ -287,17 +331,17 @@ relay.req({ kinds: [1] })
 const relay = new Relay("wss://relay.example.com", {
   eoseTimeout: 15000,
   keepAlive: 60000,
-  enablePing: true
+  enablePing: true,
 });
 
 // Pool with default options for all relays
 const pool = new RelayPool({
   eoseTimeout: 15000,
-  keepAlive: 60000
+  keepAlive: 60000,
 });
 
 // Control offline relay behavior
-pool.ignoreOffline = false;  // Include offline relays
+pool.ignoreOffline = false; // Include offline relays
 ```
 
 ## Best Practices
@@ -310,19 +354,25 @@ pool.ignoreOffline = false;  // Include offline relays
 6. **Fetch relay info server-side** - Use `getInformation()` in handlers
 7. **Handle auth challenges early** - Subscribe to `challenge$` at startup
 8. **Use `publish()` not `event()`** - Automatic retries and reconnection
+9. **CRITICAL: Always use `defaultValue` with `lastValueFrom()`** - Prevents "no
+   elements in sequence" errors
+10. **For single events: Use `eventStore.event()` with `filter()` and
+    `simpleTimeout()`** - Don't manually fetch then query
 
 ## Detailed Documentation
 
 For comprehensive information, see the reference files:
 
-- **[references/api-complete.md](references/api-complete.md)** - Complete API reference
+- **[references/api-complete.md](references/api-complete.md)** - Complete API
+  reference
   - All Relay class methods and properties
   - All RelayPool class methods and properties
   - RelayGroup class documentation
   - Complete type definitions
   - All operators with type signatures
-  
-- **[references/patterns.md](references/patterns.md)** - Advanced patterns and examples
+
+- **[references/patterns.md](references/patterns.md)** - Advanced patterns and
+  examples
   - Fresh framework integration examples
   - Multi-relay patterns
   - Event store integration
@@ -332,21 +382,51 @@ For comprehensive information, see the reference files:
 
 ## Troubleshooting
 
+**"no elements in sequence" error**:
+
+- **Cause**: `lastValueFrom()` called on observable that completes without
+  emitting
+- **Fix**: Always provide `{ defaultValue: <value> }` as second parameter
+- **When**: Any `pool.request()`, profile fetches, or queries that might return
+  0 results
+
+```typescript
+// ❌ BAD - throws error if no events
+await lastValueFrom(pool.request(relays, { kinds: [0] }));
+
+// ✅ GOOD - returns null if no events
+await lastValueFrom(
+  pool.request(relays, { kinds: [0] }).pipe(mapEventsToStore(eventStore)),
+  { defaultValue: null },
+);
+```
+
 **Events not showing up**:
+
 - Ensure `mapEventsToStore(eventStore)` is in pipeline
 - Check that `useSubscription()` is called (doesn't return values)
 - Verify filters are correct
 
 **Type errors with ctx.data**:
+
 - Use `define.page<typeof handler>()` pattern
 - Ensure handler returns `page({ data })`
 
 **Connection issues**:
+
 - Check `relay.connected$` and `relay.error$`
 - Verify relay URL format (wss:// or ws://)
 - Check browser console for WebSocket errors
 
 **Authentication failures**:
+
 - Subscribe to `challenge$` before operations
 - Check `authRequiredForRead$` and `authRequiredForPublish$`
 - Verify signer (window.nostr) is available
+
+**Event not loading by pointer**:
+
+- Use `eventStore.event(pointer)` not manual `pool.request()`
+- Add `filter(e => e !== undefined)` to wait for load
+- Use `simpleTimeout()` to prevent infinite waiting
+- Verify eventLoader is configured with lookup relays

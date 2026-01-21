@@ -35,7 +35,9 @@ function ProfileCard({ event }: { event: NostrEvent }) {
   return (
     <UserCard
       picture={profileData.picture as string | undefined}
-      displayName={(profileData.display_name || profileData.name) as string | undefined}
+      displayName={(profileData.display_name || profileData.name) as
+        | string
+        | undefined}
       pubkey={event.pubkey}
       about={profileData.about as string | undefined}
     />

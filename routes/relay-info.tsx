@@ -120,23 +120,24 @@ export default define.page<typeof handler>(function RelayInfoPage(ctx) {
               </dl>
             </div>
 
-            {relayInfo.supported_nips && relayInfo.supported_nips.length > 0 && (
-              <div className="bg-white dark:bg-neutral-900 rounded-lg shadow border border-neutral-200 dark:border-neutral-700 p-6">
-                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
-                  Supported NIPs
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {relayInfo.supported_nips.map((nip) => (
-                    <span
-                      key={nip}
-                      className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-3 py-1 rounded-full text-sm font-medium"
-                    >
-                      NIP-{nip.toString().padStart(2, "0")}
-                    </span>
-                  ))}
+            {relayInfo.supported_nips && relayInfo.supported_nips.length > 0 &&
+              (
+                <div className="bg-white dark:bg-neutral-900 rounded-lg shadow border border-neutral-200 dark:border-neutral-700 p-6">
+                  <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">
+                    Supported NIPs
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {relayInfo.supported_nips.map((nip) => (
+                      <span
+                        key={nip}
+                        className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-3 py-1 rounded-full text-sm font-medium"
+                      >
+                        NIP-{nip.toString().padStart(2, "0")}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {relayInfo.limitation && (
               <div className="bg-white dark:bg-neutral-900 rounded-lg shadow border border-neutral-200 dark:border-neutral-700 p-6">
@@ -148,11 +149,12 @@ export default define.page<typeof handler>(function RelayInfoPage(ctx) {
                     <div key={key}>
                       <dt className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
                         {key.replace(/_/g, " ").replace(/\b\w/g, (l) =>
-                          l.toUpperCase()
-                        )}
+                          l.toUpperCase())}
                       </dt>
                       <dd className="text-neutral-900 dark:text-neutral-100">
-                        {typeof value === "boolean" ? (value ? "Yes" : "No") : value}
+                        {typeof value === "boolean"
+                          ? (value ? "Yes" : "No")
+                          : value}
                       </dd>
                     </div>
                   ))}
@@ -161,12 +163,15 @@ export default define.page<typeof handler>(function RelayInfoPage(ctx) {
             )}
 
             {!relayInfo.name && !relayInfo.description &&
-              (!relayInfo.supported_nips || relayInfo.supported_nips.length === 0) && (
-              <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-yellow-800 dark:text-yellow-200">
-                <strong>Note:</strong> This relay does not provide NIP-11 information
-                document or it could not be fetched.
-              </div>
-            )}
+              (!relayInfo.supported_nips ||
+                relayInfo.supported_nips.length === 0) &&
+              (
+                <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-yellow-800 dark:text-yellow-200">
+                  <strong>Note:</strong>{" "}
+                  This relay does not provide NIP-11 information document or it
+                  could not be fetched.
+                </div>
+              )}
           </div>
         </div>
       </div>

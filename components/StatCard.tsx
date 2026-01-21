@@ -7,7 +7,9 @@ export interface StatCardProps {
   className?: string;
 }
 
-export function StatCard({ label, value, icon, className = "" }: StatCardProps) {
+export function StatCard(
+  { label, value, icon, className = "" }: StatCardProps,
+) {
   return (
     <div
       className={`bg-white dark:bg-neutral-900 rounded-lg shadow border border-neutral-200 dark:border-neutral-700 p-4 ${className}`}

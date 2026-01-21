@@ -3,16 +3,19 @@ import { useSyncExternalStore } from "preact/compat";
 import { useCallback, useMemo, useRef } from "preact/hooks";
 import { BehaviorSubject, type Observable, of, Subscription, take } from "rxjs";
 
+export default function use$<T>(input?: BehaviorSubject<T>): T;
 export default function use$<T>(
-  input?: BehaviorSubject<T>,
-): T;
-export default function use$<T>(input?: Observable<T>): T | undefined;
+  input?: Observable<T> | undefined,
+): T | undefined;
 export default function use$<T>(
-  input: () => Observable<T>,
+  input: () => Observable<T> | undefined,
   deps: unknown[],
 ): T | undefined;
 export default function use$<T>(
-  input?: Observable<T> | BehaviorSubject<T> | (() => Observable<T>),
+  input?:
+    | Observable<T>
+    | BehaviorSubject<T>
+    | (() => Observable<T> | undefined),
   deps?: unknown[],
 ): T | undefined {
   const state$: Observable<T | undefined> = useMemo(

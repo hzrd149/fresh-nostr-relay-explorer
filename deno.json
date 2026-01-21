@@ -25,6 +25,7 @@
     "applesauce-core": "npm:applesauce-core@^0.0.0-next-20260121015157",
     "applesauce-loaders": "npm:applesauce-loaders@^0.0.0-next-20260121015157",
     "applesauce-relay": "npm:applesauce-relay@^0.0.0-next-20260121015157",
+    "nostr-tools": "npm:nostr-tools@^2.19.4",
     "daisyui": "npm:daisyui@^5.5.14",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "preact": "npm:preact@^10.28.2",
