@@ -40,6 +40,7 @@
     "npm:applesauce-core@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
     "npm:applesauce-loaders@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
     "npm:applesauce-relay@^0.0.0-next-20260121015157": "0.0.0-next-20260121015157",
+    "npm:daisyui@^5.5.14": "5.5.14",
     "npm:esbuild-wasm@~0.25.11": "0.25.12",
     "npm:esbuild@0.25.7": "0.25.7",
     "npm:esbuild@~0.25.5": "0.25.12",
@@ -50,6 +51,7 @@
     "npm:rollup@^4.50.0": "4.55.2",
     "npm:rxjs@^7.8.2": "7.8.2",
     "npm:tailwindcss@^4.1.18": "4.1.18",
+    "npm:vite@^7.1.4": "7.3.1_@types+node@24.2.0_picomatch@4.0.3",
     "npm:vite@^7.3.1": "7.3.1_@types+node@24.2.0_picomatch@4.0.3"
   },
   "jsr": {
@@ -107,7 +109,8 @@
         "npm:@babel/preset-react",
         "npm:@mjackson/node-fetch-server",
         "npm:@prefresh/vite",
-        "npm:rollup"
+        "npm:rollup",
+        "npm:vite@^7.1.4"
       ]
     },
     "@std/bytes@1.0.6": {
@@ -1153,6 +1156,9 @@
     "convert-source-map@2.0.0": {
       "integrity": "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg=="
     },
+    "daisyui@5.5.14": {
+      "integrity": "sha512-L47rvw7I7hK68TA97VB8Ee0woHew+/ohR6Lx6Ah/krfISOqcG4My7poNpX5Mo5/ytMxiR40fEaz6njzDi7cuSg=="
+    },
     "debug@4.4.3": {
       "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
       "dependencies": [
@@ -1579,6 +1585,7 @@
       "npm:applesauce-core@^0.0.0-next-20260121015157",
       "npm:applesauce-loaders@^0.0.0-next-20260121015157",
       "npm:applesauce-relay@^0.0.0-next-20260121015157",
+      "npm:daisyui@^5.5.14",
       "npm:preact@^10.28.2",
       "npm:rxjs@^7.8.2",
       "npm:tailwindcss@^4.1.18",
