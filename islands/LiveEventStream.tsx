@@ -1,20 +1,10 @@
 import { mapEventsToStore } from "applesauce-core/observable";
+import { map } from "rxjs";
+import { EventCard } from "../components/EventCard.tsx";
 import use$ from "../hooks/use$.ts";
 import useSubscription from "../hooks/useSubscription.ts";
 import { eventStore } from "../lib/event-store.ts";
 import { pool } from "../lib/relay-pool.ts";
-import { EventCard } from "../components/EventCard.tsx";
-import { map } from "rxjs";
-
-interface NostrEvent {
-  id: string;
-  pubkey: string;
-  created_at: number;
-  kind: number;
-  content: string;
-  tags: string[][];
-  sig: string;
-}
 
 export default function LiveEventStream({ relay }: { relay: string }) {
   // Subscribe to all event types
